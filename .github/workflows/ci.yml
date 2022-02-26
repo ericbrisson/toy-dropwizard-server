@@ -76,4 +76,22 @@ jobs:
         with:
           source: "./"
           target: "~/prod"
+          
+      - name: Restart All Instances on Cloud
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.KEY }}
+          port: ${{ secrets.PORT }}
+          script: |
+            cd ~/prod
+            docker-compose down && docker-compose up --build -d
+            
+      - name: Kill VPN connection
+        if: always()
+        run: |
+          sudo systemctl stop openvpn@client
+          sudo systemctl status openvpn@client | cat
+          sudo rm -rf /etc/openvpn/
 
