@@ -57,6 +57,14 @@ jobs:
           cd ..
           rm -rf vpn-yeg-ovpn
           rm vpn-yeg-ovpn.zip
+          
+      - name: Connect VPN
+        run: sudo systemctl start openvpn@client
+        
+      - name: Sleep for 10 seconds to allow VPN to connect
+        uses: jakejarvis/wait-action@master
+        with:
+          time: '10s'
       
       - name: Copy repo to cloud
         uses: appleboy/scp-action@master
