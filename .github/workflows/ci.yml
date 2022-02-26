@@ -41,6 +41,23 @@ jobs:
     steps:
       - uses: actions/checkout@master
       
+      - name: Install OpenVPN
+        run: |
+          sudo apt-get update
+          sudo apt-get --assume-yes --no-install-recommends install openvpn unzip
+        
+      - name: Setup VPN config
+        run: |
+          wget https://vpn-yeg.cloud.cybera.ca/vpn-yeg-ovpn.zip
+          unzip vpn-yeg-ovpn.zip
+          cd vpn-yeg-ovpn
+          echo "${{ secrets.SECRET_USERNAME_PASSWORD }}" > secret.txt
+          cat ../.github/vpn/client.conf > client.conf
+          sudo mv ca.crt client.conf client.crt client.key secret.txt /etc/openvpn/
+          cd ..
+          rm -rf vpn-yeg-ovpn
+          rm vpn-yeg-ovpn.zip
+      
       - name: Copy repo to cloud
         uses: appleboy/scp-action@master
         env:
